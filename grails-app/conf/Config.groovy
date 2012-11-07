@@ -108,7 +108,7 @@ rabbitmq {
         password = "guest"
         hostname = "localhost"
     }
-    retryPolicy.maxAttempts = 3
+
     queues = {
         'grailstwitter.status'()
     }

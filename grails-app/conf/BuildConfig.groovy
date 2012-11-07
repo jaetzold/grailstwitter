@@ -16,18 +16,15 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-        compile "org.springframework.amqp:spring-rabbit:1.1.2.RELEASE"
 
         // runtime 'mysql:mysql-connector-java:5.1.5'
     }
     plugins {
         compile ":hibernate:2.1.1",
                 ":gemfire:1.0.0.M5",
-                ":rabbitmq:1.0.0.RC2",
+//                ":rabbitmq:1.0.0.BUILD-SNAPSHOT",
                 ":searchable:0.6.4",
-                ":spring-security-core:1.2.7.3", {
-            excludes "spring-rabbit"
-        }
+                ":spring-security-core:1.2.7.3"
 
         runtime ":jquery:1.8.0"
 
