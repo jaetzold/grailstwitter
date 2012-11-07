@@ -4,12 +4,12 @@ import org.grails.twitter.auth.Person
 
 class StatusService {
 
-    static expose = ['jms']
+    static rabbitQueue = "grailstwitter.status"
 
     def springSecurityService
     def twitterCache
 
-    void onMessage(username) {
+    void handleMessage(String username) {
         log.debug "Message received. New status message posted by user <${username}>."
         def following = Person.withCriteria {
             projections {

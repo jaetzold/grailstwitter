@@ -86,7 +86,9 @@ log4j = {
     warn   'org.mortbay.log'
 
     debug 'grails.app.controllers.org.grails.twitter',
-          'grails.app.services.org.grails.twitter'
+          'grails.app.services.org.grails.twitter',
+          'org.grails.rabbitmq',
+          'grails.app.services.org.grails.rabbitmq'
 }
 
 // Added by the Spring Security Core plugin:
@@ -97,5 +99,17 @@ grails.plugins.springsecurity.authority.className = 'org.grails.twitter.auth.Aut
 grails.gemfire.regions = {
     twitterCache {
         entryTimeToLive = expirationAttributes(120, DESTROY)
+    }
+}
+
+rabbitmq {
+    connectionfactory {
+        username = "guest"
+        password = "guest"
+        hostname = "localhost"
+    }
+    retryPolicy.maxAttempts = 3
+    queues = {
+        'grailstwitter.status'()
     }
 }

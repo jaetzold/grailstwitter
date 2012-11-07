@@ -9,6 +9,6 @@ class Status {
 
     transient jmsService
     transient afterInsert = {
-        jmsService.send 'grailstwitter.status', author.username
+        rabbitSend 'grailstwitter.status', author.username
     }
 }

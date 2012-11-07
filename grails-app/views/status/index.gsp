@@ -2,7 +2,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>What Are You Doing?</title>
-    <g:javascript library="prototype" />
+    <g:javascript plugin="jquery" library="jquery" />
 </head>
 <body>
     <h1>Search For People To Follow</h1>
