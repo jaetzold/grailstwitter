@@ -11,7 +11,10 @@
         (already following this person)
         </g:if>
         <g:else>
-        <g:link id="${person.id}" action="follow" controller="status">follow</g:link>
+        <g:form style="display: inline-block;" action="follow" controller="status" method="POST">
+            <input type="hidden" name="id" value="${person.id}"/>
+            <g:submitButton name="submit" value="follow"/>
+        </g:form>
         </g:else>
     </div>
     </g:each>
