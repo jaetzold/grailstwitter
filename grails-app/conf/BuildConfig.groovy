@@ -16,6 +16,7 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
 
         // runtime 'mysql:mysql-connector-java:5.1.5'
     }
@@ -24,9 +25,15 @@ grails.project.dependency.resolution = {
                 ":gemfire:1.0.0.M5",
 //                ":rabbitmq:1.0.0.BUILD-SNAPSHOT",
                 ":searchable:0.6.4",
-                ":spring-security-core:1.2.7.3"
+                ":spring-security-core:1.2.7.3", {
+            excludes "functional-test"
+        }
 
         runtime ":jquery:1.8.0"
+
+        test ":spock:0.7", {
+            excludes "spock-grails-support"
+        }
 
         build ":tomcat:2.2.0.RC2"
     }
