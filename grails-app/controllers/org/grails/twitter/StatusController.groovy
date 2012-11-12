@@ -11,7 +11,6 @@ class StatusController {
     def springSecurityService
     def statusService
 
-    @Cacheable("timeline_view")
     def index() {
         def messages = statusService.currentUserTimeline(currentUserId)
         [statusMessages: messages]

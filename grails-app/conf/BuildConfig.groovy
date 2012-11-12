@@ -23,12 +23,13 @@ grails.project.dependency.resolution = {
     plugins {
         compile ":cache:1.0.1",
                 ":cache-ehcache:1.0.0",
+                ":events-push:1.0.M3",
                 ":hibernate:$grailsVersion",
-                ":platform-core:1.0.M6",
+                ":platform-core:1.0.M6.1",
                 ":rabbitmq:1.0.0.BUILD-SNAPSHOT",
                 ":searchable:0.6.4",
                 ":spring-security-core:1.2.7.3", {
-            excludes "functional-test"
+            excludes "functional-test", "resources"
         }
 
         runtime ":jquery:1.8.0",
@@ -45,4 +46,5 @@ grails.project.dependency.resolution = {
     }
 }
 
+grails.tomcat.nio = true
 //grails.project.fork.run = true

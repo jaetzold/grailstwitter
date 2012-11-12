@@ -11,8 +11,4 @@ class Status implements Serializable {
     long ttl
 
     static hasMany = [tags: Tag]
-
-    transient afterInsert = {
-        rabbitSend 'grailstwitter.status', author.username
-    }
 }

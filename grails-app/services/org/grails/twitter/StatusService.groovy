@@ -1,5 +1,6 @@
 package org.grails.twitter
 
+import grails.events.Listener
 import grails.plugin.cache.Cacheable
 import grails.plugin.cache.CacheEvict
 
@@ -7,20 +8,34 @@ import org.grails.twitter.auth.Person
 
 class StatusService {
 
-    static rabbitQueue = "grailstwitter.status"
-
     def grailsCacheManager
+    def groovyPageRenderer
     def springSecurityService
 
-    void handleMessage(String username) {
-        log.debug "Message received. New status message posted by user <${username}>."
-        def following = Person.where { followed.username == username }.property("id").list()
+    @Listener(namespace="gorm")
+    void afterInsert(Status status) {
+        Status.withNewSession {
+            status = Status.get(status.id)
 
-        // TODO clear cache for everyone following given user
-        for (followerId in following) {
-            grailsCacheManager.getCache("timeline").evict(followerId)
+            log.debug "Message received. New status message posted by user <${status.authorId}>."
+            def following = Person.where { followed.id == status.authorId }.property("id").list()
+
+            // TODO clear cache for everyone following given user
+            for (followerId in following) {
+                grailsCacheManager.getCache("timeline").evict(followerId)
+                println "Here!!!!"
+                event topic: "statusAdded", data: [userId: followerId, content: groovyPageRenderer.render(
+                        template: "/status/statusMessages",
+                        model: [statusMessage: status]) ]
+            }
+
         }
 
+    }
+
+    @Listener
+    void statusAdded(Map data) {
+        println ">> Status message added. Notifying user ${data.userId} for content: ${data.content}"
     }
 
     @CacheEvict(value="timeline", key="#userId")
