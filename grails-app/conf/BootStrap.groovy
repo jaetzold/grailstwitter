@@ -5,12 +5,21 @@ import org.grails.twitter.auth.PersonAuthority
 
 class BootStrap {
 
+    def searchableService
     def springSecurityService
 
     def init = { servletContext ->
         if (!Person.count()) {
             createData()
         }
+
+        // We manually start the mirroring process to ensure that it comes after
+        // Autobase performs its migrations.
+        println "Performing bulk index"
+        searchableService.reindex()
+
+        println "Starting mirror service"
+        searchableService.startMirroring()
     }
 
     def destroy = {

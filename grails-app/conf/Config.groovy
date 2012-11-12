@@ -86,15 +86,18 @@ log4j = {
     warn   'org.mortbay.log'
 
     debug 'grails.app.controllers.org.grails.twitter',
-          'grails.app.services.org.grails.twitter',
-          'org.grails.rabbitmq',
-          'grails.app.services.org.grails.rabbitmq'
+          'grails.app.services.org.grails.twitter'
 }
 
 // Added by the Spring Security Core plugin:
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'org.grails.twitter.auth.Person'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'org.grails.twitter.auth.PersonAuthority'
 grails.plugins.springsecurity.authority.className = 'org.grails.twitter.auth.Authority'
+
+searchable {
+    mirrorChanges = false
+    bulkIndexOnStartup = false
+}
 
 grails.gemfire.regions = {
     twitterCache {
