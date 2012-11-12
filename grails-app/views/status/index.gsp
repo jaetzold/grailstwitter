@@ -2,7 +2,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>What Are You Doing?</title>
-    <g:javascript plugin="jquery" library="jquery" />
+    <r:require modules="jquery"/>
 </head>
 <body>
     <h1>Search For People To Follow</h1>
@@ -11,6 +11,10 @@
             <g:textField name="q" value=""/>
         </g:form>
     </div>
+
+    <!--
+    ${grailsApplication.mainContext.getBean('grailsResourceProcessor').dumpResources().encodeAsHTML()}
+    -->
 
     <h1>What Are You Doing?</h1>
     <div class="updatStatusForm">

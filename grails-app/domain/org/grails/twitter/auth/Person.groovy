@@ -18,7 +18,7 @@ class Person {
 	}
 
 	static mapping = {
-		password column: '`password`'
+		password column: 'password_hash'
 	}
 
 	Set<Authority> getAuthorities() {

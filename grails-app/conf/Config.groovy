@@ -99,6 +99,12 @@ searchable {
     bulkIndexOnStartup = false
 }
 
+grails.cache.config = {
+    cache {
+        name 'timeline'
+    }
+}
+
 grails.gemfire.regions = {
     twitterCache {
         entryTimeToLive = expirationAttributes(120, DESTROY)
@@ -116,3 +122,8 @@ rabbitmq {
         'grailstwitter.status'()
     }
 }
+
+grails.resources.adhoc.patterns = ["/images/*", "/css/*", "/js/*"]
+grails.resources.adhoc.excludes = [ "**/*.swp", "**/*.html" ]
+
+grails.dbconsole.enabled = true

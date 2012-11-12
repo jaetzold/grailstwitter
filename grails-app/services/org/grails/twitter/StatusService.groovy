@@ -1,36 +1,33 @@
 package org.grails.twitter
 
+import grails.plugin.cache.Cacheable
+import grails.plugin.cache.CacheEvict
+
 import org.grails.twitter.auth.Person
 
 class StatusService {
 
     static rabbitQueue = "grailstwitter.status"
 
+    def grailsCacheManager
     def springSecurityService
-    def twitterCache
 
     void handleMessage(String username) {
         log.debug "Message received. New status message posted by user <${username}>."
-        def following = Person.withCriteria {
-            projections {
-                property 'username'
-            }
-            followed {
-                eq 'username', username
-            }
+        def following = Person.where { followed.username == username }.property("id").list()
+
+        // TODO clear cache for everyone following given user
+        for (followerId in following) {
+            grailsCacheManager.getCache("timeline").evict(followerId)
         }
 
-        following.each { uname ->
-            twitterCache.remove uname
-        }
     }
 
-    void updateStatus(String message) {
+    @CacheEvict(value="timeline", key="#userId")
+    void updateStatus(long userId, String message) {
         def status = new Status(message: message)
-        status.author = lookupPerson()
+        status.author = Person.get(userId)
         status.save()
-
-        twitterCache.remove springSecurityService.principal.username
     }
 
     void follow(long personId) {
@@ -39,8 +36,21 @@ class StatusService {
             def currentUser = lookupPerson()
             currentUser.addToFollowed(person)
 
-            twitterCache.remove springSecurityService.principal.username
+            grailsCacheManager.getCache("timeline").evict(currentUser.id)
         }
+    }
+
+    @Cacheable(value="timeline", key="#userId")
+    def currentUserTimeline(long userId) {
+        log.debug "No messages found in cache for user with ID <${userId}>. Querying database..."
+        def per = Person.get(userId)
+
+        def messages = Status.whereAny {
+            author.username == per.username 
+            if (per.followed) author in per.followed
+        }.list(max: 10, sort: "dateCreated", order: "desc")
+
+        return messages
     }
 
     private lookupPerson() {

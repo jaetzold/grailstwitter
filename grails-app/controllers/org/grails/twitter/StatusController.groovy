@@ -1,6 +1,7 @@
 package org.grails.twitter
 
 import grails.plugins.springsecurity.Secured
+import grails.plugin.cache.Cacheable
 
 import org.grails.twitter.auth.Person
 
@@ -9,50 +10,38 @@ class StatusController {
 
     def springSecurityService
     def statusService
-    def twitterCache
 
-    def index = {
-        def messages = currentUserTimeline()
+    @Cacheable("timeline_view")
+    def index() {
+        def messages = statusService.currentUserTimeline(currentUserId)
         [statusMessages: messages]
     }
 
-    def updateStatus = {
-        statusService.updateStatus params.message
-        def messages = currentUserTimeline()
+    def updateStatus(StatusCommand cmd) {
+        if (cmd.hasErrors()) {
+            render status: 400, text: "Message does not meet constraints: ${g.message(error: cmd.errors.getFieldError('message'))}"
+            return
+        }
+
+        statusService.updateStatus currentUserId, cmd.message
+        def messages = statusService.currentUserTimeline(currentUserId)
         render template: 'statusMessages', collection: messages, var: 'statusMessage'
     }
 
-    def follow = {
-        statusService.follow params.long('id')
+    def follow() {
+        statusService.follow params.long("id")
         redirect action: 'index'
     }
 
-    private lookupPerson() {
-        Person.get(springSecurityService.principal.id)
+    private getCurrentUserId() {
+        springSecurityService.principal.id
     }
+}
 
-    private currentUserTimeline() {
-        def messages = twitterCache[springSecurityService.principal.username]
-        if (!messages) {
-            log.debug "No messages found in cache for user <${springSecurityService.principal.username}>. Querying database..."
-            def per = lookupPerson()
-            messages = Status.withCriteria {
-                or {
-                    author {
-                        eq 'username', per.username
-                    }
-                    if (per.followed) {
-                        inList 'author', per.followed
-                    }
-                }
-                maxResults 10
-                order 'dateCreated', 'desc'
-            }
-            twitterCache[springSecurityService.principal.username] = messages
-        }
-        else {
-            log.debug "Status messages loaded from cache for user <${springSecurityService.principal.username}>."
-        }
-        messages
+class StatusCommand {
+    String message
+
+    static constraints = {
+        message blank: false, nullable: false, maxSize: 50
     }
 }
